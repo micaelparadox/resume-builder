@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles */
+body {
+  @apply bg-gray-100 text-gray-900;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
