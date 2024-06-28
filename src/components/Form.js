@@ -3,6 +3,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generatePDF } from '../api/resumeApi';
 import InputMask from 'react-input-mask';
+import { FaPlus, FaEdit, FaTrashAlt, FaSave } from 'react-icons/fa';
+import styled from 'styled-components';
 
 const initialResume = {
   name: '',
@@ -14,6 +16,97 @@ const initialResume = {
   workHistory: [{ title: '', company: '', startDate: '', endDate: '', duration: '', description: [''], technologies: [''] }],
   education: [{ degree: '', institution: '', startDate: '', endDate: '' }]
 };
+
+const Container = styled.div`
+  background: #1d1d1d;
+  color: #f5f5f5;
+  padding: 3rem;
+  border-radius: 12px;
+  width: 80%;
+  margin: 0 auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+`;
+
+const Title = styled.h1`
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #f5f5f5;
+  font-size: 2.5rem;
+`;
+
+const FormSection = styled.div`
+  margin-bottom: 2.5rem;
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: bold;
+  color: #f5f5f5;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #333;
+  color: #f5f5f5;
+  font-size: 1rem;
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #555;
+  background: #333;
+  color: #f5f5f5;
+  font-size: 1rem;
+`;
+
+const Button = styled.button`
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 0.75rem;
+  margin-top: 1rem;
+  color: #f5f5f5;
+  font-size: 1rem;
+
+  &.add {
+    background: #007bff;
+  }
+
+  &.edit {
+    background: #ffc107;
+  }
+
+  &.remove {
+    background: #dc3545;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  svg {
+    margin-right: 0.5rem;
+  }
+`;
+
+const Error = styled.span`
+  display: block;
+  margin-top: 0.5rem;
+  color: #ff6b6b;
+  font-size: 0.875rem;
+`;
 
 function Form() {
   const [resume, setResume] = useState(initialResume);
@@ -174,25 +267,24 @@ function Form() {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-white shadow-md rounded-lg">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Construtor de Currículo</h1>
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-6">
+    <Container>
+      <Title>Construtor de Currículo</Title>
+      <form onSubmit={handleSubmit}>
+        <FormSection className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Nome</label>
-            <input
+            <Label>Nome</Label>
+            <Input
               type="text"
               name="name"
               value={resume.name}
               onChange={handleChange}
-              className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
               placeholder="Ex: Micael Santana"
               disabled={isEditing.section !== null && isEditing.section !== 'name'}
             />
-            {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+            {errors.name && <Error>{errors.name}</Error>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Telefone</label>
+            <Label>Telefone</Label>
             <InputMask
               mask="+99 (99) 99999-9999"
               value={resume.telephone}
@@ -200,109 +292,102 @@ function Form() {
               disabled={isEditing.section !== null && isEditing.section !== 'telephone'}
             >
               {() => (
-                <input
+                <Input
                   type="text"
                   name="telephone"
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: (+55) 47 99642-8339"
                 />
               )}
             </InputMask>
-            {errors.telephone && <span className="text-red-500 text-sm">{errors.telephone}</span>}
+            {errors.telephone && <Error>{errors.telephone}</Error>}
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-6">
+        </FormSection>
+        <FormSection className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Localização</label>
-            <input
+            <Label>Localização</Label>
+            <Input
               type="text"
               name="location"
               value={resume.location}
               onChange={handleChange}
-              className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
               placeholder="Ex: Navegantes, Santa Catarina"
               disabled={isEditing.section !== null && isEditing.section !== 'location'}
             />
-            {errors.location && <span className="text-red-500 text-sm">{errors.location}</span>}
+            {errors.location && <Error>{errors.location}</Error>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
+            <Label>Email</Label>
+            <Input
               type="email"
               name="email"
               value={resume.email}
               onChange={handleChange}
-              className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
               placeholder="Ex: micaelparadox@gmail.com"
               disabled={isEditing.section !== null && isEditing.section !== 'email'}
             />
-            {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+            {errors.email && <Error>{errors.email}</Error>}
           </div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">LinkedIn</label>
-          <input
+        </FormSection>
+        <FormSection>
+          <Label>LinkedIn</Label>
+          <Input
             type="url"
             name="linkedin"
             value={resume.linkedin}
             onChange={handleChange}
-            className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
             placeholder="Ex: https://www.linkedin.com/in/micasan"
             disabled={isEditing.section !== null && isEditing.section !== 'linkedin'}
           />
-          {errors.linkedin && <span className="text-red-500 text-sm">{errors.linkedin}</span>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Resumo</label>
-          <textarea
+          {errors.linkedin && <Error>{errors.linkedin}</Error>}
+        </FormSection>
+        <FormSection>
+          <Label>Resumo</Label>
+          <TextArea
             name="summary"
             value={resume.summary}
             onChange={handleChange}
-            className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
             rows="4"
             placeholder="Com 11 anos em TI, eu me especializo em Java, Spring, Quarkus, AWS, e Microservices. Minha experiência full-stack inclui..."
             disabled={isEditing.section !== null && isEditing.section !== 'summary'}
-          ></textarea>
-          {errors.summary && <span className="text-red-500 text-sm">{errors.summary}</span>}
-        </div>
+          ></TextArea>
+          {errors.summary && <Error>{errors.summary}</Error>}
+        </FormSection>
 
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">Histórico de Trabalho</h2>
+        <FormSection>
+          <h2 className="text-xl font-semibold text-gray-200">Histórico de Trabalho</h2>
           {resume.workHistory.map((job, index) => (
-            <div key={index} className="space-y-4 border-b border-gray-200 pb-4 mb-4 relative">
-              <button
+            <div key={index} className="space-y-4 border-b border-gray-600 pb-4 mb-4 relative">
+              <Button
                 type="button"
-                className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                className="remove"
                 onClick={() => handleDelete('workHistory', index)}
               >
-                Remover
-              </button>
+                <FaTrashAlt /> Remover
+              </Button>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Título</label>
-                <input
+                <Label>Título</Label>
+                <Input
                   type="text"
                   value={job.title}
                   onChange={(e) => handleChange(e, 'workHistory', index, 'title')}
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: Senior Software Consultant"
                   disabled={isEditing.section !== null && (isEditing.section !== 'workHistory' || isEditing.index !== index)}
                 />
-                {errors[`workHistory-title-${index}`] && <span className="text-red-500 text-sm">{errors[`workHistory-title-${index}`]}</span>}
+                {errors[`workHistory-title-${index}`] && <Error>{errors[`workHistory-title-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Empresa</label>
-                <input
+                <Label>Empresa</Label>
+                <Input
                   type="text"
                   value={job.company}
                   onChange={(e) => handleChange(e, 'workHistory', index, 'company')}
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: Venha Pra Nuvem"
                   disabled={isEditing.section !== null && (isEditing.section !== 'workHistory' || isEditing.index !== index)}
                 />
-                {errors[`workHistory-company-${index}`] && <span className="text-red-500 text-sm">{errors[`workHistory-company-${index}`]}</span>}
+                {errors[`workHistory-company-${index}`] && <Error>{errors[`workHistory-company-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Data de Início</label>
+                <Label>Data de Início</Label>
                 <InputMask
                   mask="99/9999"
                   value={job.startDate}
@@ -310,17 +395,16 @@ function Form() {
                   disabled={isEditing.section !== null && (isEditing.section !== 'workHistory' || isEditing.index !== index)}
                 >
                   {() => (
-                    <input
+                    <Input
                       type="text"
-                      className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                       placeholder="MM/YYYY"
                     />
                   )}
                 </InputMask>
-                {errors[`workHistory-startDate-${index}`] && <span className="text-red-500 text-sm">{errors[`workHistory-startDate-${index}`]}</span>}
+                {errors[`workHistory-startDate-${index}`] && <Error>{errors[`workHistory-startDate-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Data de Término</label>
+                <Label>Data de Término</Label>
                 <InputMask
                   mask="99/9999"
                   value={job.endDate}
@@ -328,98 +412,94 @@ function Form() {
                   disabled={isEditing.section !== null && (isEditing.section !== 'workHistory' || isEditing.index !== index)}
                 >
                   {() => (
-                    <input
+                    <Input
                       type="text"
-                      className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                       placeholder="MM/YYYY"
                     />
                   )}
                 </InputMask>
-                {errors[`workHistory-endDate-${index}`] && <span className="text-red-500 text-sm">{errors[`workHistory-endDate-${index}`]}</span>}
+                {errors[`workHistory-endDate-${index}`] && <Error>{errors[`workHistory-endDate-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Duração</label>
-                <input
+                <Label>Duração</Label>
+                <Input
                   type="text"
                   value={job.duration}
                   readOnly
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: 2 meses"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Descrição</label>
-                <textarea
+                <Label>Descrição</Label>
+                <TextArea
                   value={job.description.join('\n')}
                   onChange={(e) => handleChange(e, 'workHistory', index, 'description')}
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   rows="3"
                   placeholder="Ex: Consultoria em projetos Java, Spring Boot, Pub/Sub..."
                   disabled={isEditing.section !== null && (isEditing.section !== 'workHistory' || isEditing.index !== index)}
-                ></textarea>
-                {errors[`workHistory-description-${index}`] && <span className="text-red-500 text-sm">{errors[`workHistory-description-${index}`]}</span>}
+                ></TextArea>
+                {errors[`workHistory-description-${index}`] && <Error>{errors[`workHistory-description-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Tecnologias</label>
-                <input
+                <Label>Tecnologias</Label>
+                <Input
                   type="text"
                   value={job.technologies.join(', ')}
                   onChange={(e) => handleChange(e, 'workHistory', index, 'technologies')}
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: Java, Spring Boot, Pub/Sub, PostgreSQL..."
                   disabled={isEditing.section !== null && (isEditing.section !== 'workHistory' || isEditing.index !== index)}
                 />
-                {errors[`workHistory-technologies-${index}`] && <span className="text-red-500 text-sm">{errors[`workHistory-technologies-${index}`]}</span>}
+                {errors[`workHistory-technologies-${index}`] && <Error>{errors[`workHistory-technologies-${index}`]}</Error>}
               </div>
-              <button
+              <Button
                 type="button"
-                className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600"
+                className="edit"
                 onClick={() => handleEdit('workHistory', index)}
               >
-                Editar
-              </button>
+                <FaEdit /> Editar
+              </Button>
             </div>
           ))}
-          <button type="button" onClick={() => handleAdd('workHistory')} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Adicionar Histórico de Trabalho</button>
-        </div>
+          <Button type="button" className="add" onClick={() => handleAdd('workHistory')}>
+            <FaPlus /> Adicionar Histórico de Trabalho
+          </Button>
+        </FormSection>
 
-        <div ref={educationRef}>
-          <h2 className="text-xl font-semibold text-gray-800">Educação</h2>
+        <FormSection ref={educationRef}>
+          <h2 className="text-xl font-semibold text-gray-200">Educação</h2>
           {resume.education.map((edu, index) => (
-            <div key={index} className="space-y-4 border-b border-gray-200 pb-4 mb-4 relative">
-              <button
+            <div key={index} className="space-y-4 border-b border-gray-600 pb-4 mb-4 relative">
+              <Button
                 type="button"
-                className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
+                className="remove"
                 onClick={() => handleDelete('education', index)}
               >
-                Remover
-              </button>
+                <FaTrashAlt /> Remover
+              </Button>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Grau</label>
-                <input
+                <Label>Grau</Label>
+                <Input
                   type="text"
                   value={edu.degree}
                   onChange={(e) => handleChange(e, 'education', index, 'degree')}
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: Bachelor's degree, Computer Science"
                   disabled={isEditing.section !== null && (isEditing.section !== 'education' || isEditing.index !== index)}
                 />
-                {errors[`education-degree-${index}`] && <span className="text-red-500 text-sm">{errors[`education-degree-${index}`]}</span>}
+                {errors[`education-degree-${index}`] && <Error>{errors[`education-degree-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Instituição</label>
-                <input
+                <Label>Instituição</Label>
+                <Input
                   type="text"
                   value={edu.institution}
                   onChange={(e) => handleChange(e, 'education', index, 'institution')}
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                   placeholder="Ex: Universidade do Vale do Itajaí"
                   disabled={isEditing.section !== null && (isEditing.section !== 'education' || isEditing.index !== index)}
                 />
-                {errors[`education-institution-${index}`] && <span className="text-red-500 text-sm">{errors[`education-institution-${index}`]}</span>}
+                {errors[`education-institution-${index}`] && <Error>{errors[`education-institution-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Data de Início</label>
+                <Label>Data de Início</Label>
                 <InputMask
                   mask="99/9999"
                   value={edu.startDate}
@@ -427,17 +507,16 @@ function Form() {
                   disabled={isEditing.section !== null && (isEditing.section !== 'education' || isEditing.index !== index)}
                 >
                   {() => (
-                    <input
+                    <Input
                       type="text"
-                      className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                       placeholder="MM/YYYY"
                     />
                   )}
                 </InputMask>
-                {errors[`education-startDate-${index}`] && <span className="text-red-500 text-sm">{errors[`education-startDate-${index}`]}</span>}
+                {errors[`education-startDate-${index}`] && <Error>{errors[`education-startDate-${index}`]}</Error>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Data de Término</label>
+                <Label>Data de Término</Label>
                 <InputMask
                   mask="99/9999"
                   value={edu.endDate}
@@ -445,32 +524,35 @@ function Form() {
                   disabled={isEditing.section !== null && (isEditing.section !== 'education' || isEditing.index !== index)}
                 >
                   {() => (
-                    <input
+                    <Input
                       type="text"
-                      className="mt-1 p-3 block w-full border border-gray-300 rounded-md"
                       placeholder="MM/YYYY"
                     />
                   )}
                 </InputMask>
-                {errors[`education-endDate-${index}`] && <span className="text-red-500 text-sm">{errors[`education-endDate-${index}`]}</span>}
+                {errors[`education-endDate-${index}`] && <Error>{errors[`education-endDate-${index}`]}</Error>}
               </div>
-              <button
+              <Button
                 type="button"
-                className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600"
+                className="edit"
                 onClick={() => handleEdit('education', index)}
               >
-                Editar
-              </button>
+                <FaEdit /> Editar
+              </Button>
             </div>
           ))}
-          <button type="button" onClick={() => handleAdd('education')} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Adicionar Educação</button>
-        </div>
+          <Button type="button" className="add" onClick={() => handleAdd('education')}>
+            <FaPlus /> Adicionar Educação
+          </Button>
+        </FormSection>
 
         {isFormValid && (
-          <button type="submit" className="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Gerar PDF</button>
+          <Button type="submit" className="add">
+            <FaSave /> Gerar PDF
+          </Button>
         )}
       </form>
-    </div>
+    </Container>
   );
 }
 
